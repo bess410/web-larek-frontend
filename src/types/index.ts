@@ -18,10 +18,14 @@ export interface IOrder {
     phone: string
     address: string
     total: number
-    items: string[]
+    items: IProduct[]
 }
+// Отображение продукта на главной странице
+type TProduct = Omit<IProduct, "description">
+// Отображение продукта в корзине
+type TBasketProduct = Pick<IProduct, "id" | "title" | "price">
 
-export interface OrderResult {
+export interface IOrderResult {
     id: string
     total: number
 }
@@ -29,40 +33,25 @@ export interface OrderResult {
 export interface WebLarekApi {
     getProducts: () => Promise<IProduct[]>
     getProductById: (id: string) => Promise<IProduct>
-    orderProducts: (data: IOrder) => Promise<OrderResult>
+    orderProducts: (data: IOrder) => Promise<IOrderResult>
 }
 
 // Модель
 type AppStateModal = "product" | "basket" | "order"
-export interface IAppModel {
-    products?: IProduct[]
-    basket: Map<string, IProduct>
+export interface IAppData {
+    products: TProduct[]
+    basket: TBasketProduct[]
     basketTotal: number
-    selectedProduct?: IProduct
+    selectedProduct: string | null
     openedModal: AppStateModal | null
+    errorMessage: string | null
 
     loadProducts: () => Promise<void>
-    selectProduct: (id: string) => Promise<void>
+    selectProduct: (id: string) => IProduct
     addProductToBasket: (id: string) => void
     removeProductFromBasket: (id: string) => void
-    orderProducts: () => Promise<OrderResult>
+    orderProducts: () => Promise<IOrderResult>
     openModal: (modal: AppStateModal) => void
     closeModal: () => void
-}
-// Отображения
-export interface ProductView {
-    id: string
-    image: string
-    title: string
-    category: ProductCategory
-    price: number | null
-}
-
-export interface SelectedProductView extends ProductView {
-    description: string
-}
-
-export interface BasketView {
-    products: Pick<ProductView, "id" | "title" | "price">[]
-    total: number
+    checkOrderValidation: (data: Record<keyof IOrder, string>) => boolean
 }
