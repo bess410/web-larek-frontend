@@ -30,6 +30,7 @@ export interface IOrderResult {
     total: number
 }
 
+//Api
 export interface WebLarekApi {
     getProducts: () => Promise<IProduct[]>
     getProductById: (id: string) => Promise<IProduct>
@@ -39,12 +40,13 @@ export interface WebLarekApi {
 // Модель
 type AppStateModal = "product" | "basket" | "order"
 export interface IAppData {
+    //TODO не знаю нужно ли здесь объявлять поля, так как они все равно будут приватные
     products: TProduct[]
     basket: TBasketProduct[]
-    basketTotal: number
     selectedProduct: string | null
     openedModal: AppStateModal | null
-    errorMessage: string | null
+    orderFields: Record<keyof IOrder, [value:string, error:string]> | null
+    buttonActive: boolean
 
     loadProducts: () => Promise<void>
     selectProduct: (id: string) => IProduct
@@ -53,5 +55,6 @@ export interface IAppData {
     orderProducts: () => Promise<IOrderResult>
     openModal: (modal: AppStateModal) => void
     closeModal: () => void
-    checkOrderValidation: (data: Record<keyof IOrder, string>) => boolean
+    getBasketTotal: () => number | null
+    checkOrderValidation: () => boolean
 }

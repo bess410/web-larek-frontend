@@ -148,34 +148,100 @@ type AppStateModal = "product" | "basket" | "order"
 
 #### Класс AppData
 
-Класс отвечает за хранение данных и логику приложения \
+Класс отвечает за хранение данных приложения \
 Конструктор класса принимает экземпляр брокера событий \
+Все поля приватные, доступ через методы \
 В полях класса хранятся следующие данные:
 
-- _products: TProduct[] - массив объектов продуктов (товаров)
-- _selectedProduct: string | null - id товара для отображения в модальном окне
-- _basket: TBasketProduct[] - массив товаров в корзине
-- _basketTotal: number - сумма товаров в корзине
-- _openedModal: AppStateModal | null - тип открытого модального окна
-- _errorMessage: string | null - сообщение об ошибке
+- products: TProduct[] - массив объектов продуктов (товаров)
+- selectedProduct: string | null - id товара для отображения в модальном окне
+- basket: TBasketProduct[] - массив товаров в корзине
+- openedModal: AppStateModal | null - тип открытого модального окна
+- orderFields: Record<keyof IOrder, [value:string, error:string]> | null - поля формы (ключ, значение, сообщение об ошибке)
+- buttonActive: boolean - активна ли кнопка на форме
 - events: IEvents - экземпляр `EventEmitter` для инициации событий при изменении данных
 
 Также класс предоставляет набор методов для взаимодействия с этими данными.
 
 - loadProducts: () => Promise<void> - получаем товары для главной страницы, вызывает событие изменения массива продуктов
 - selectProduct: (id: string) => IProduct - выбор продукта для отображения в модальном окне, вызывает событие открытия
-  модального окна с типом `product` и изменение выбранного товара
+  модального окна с типом `product`
 - addProductToBasket: (id: string) => void - добавление товара в корзину, вызывает событие изменения массива товаров
   в корзине, пересчета стоимости всех товаров
 - removeProductFromBasket: (id: string) => void - удаление товара из корзины, вызывает событие изменения массива товаров
   в корзине, пересчета стоимости всех товаров
-- orderProducts: () => Promise<IOrderResult> - заказать товары из корзины, вызывает событие изменения массива товаров
-  в корзине, открытие модального окна с типом `order`
+- orderProducts: () => Promise<IOrderResult> - заказать товары из корзины, вызывает событие открытия
+  модального окна с типом `order`
 - openModal: (modal: AppStateModal) => void - открытие модального окна с заданным типом, вызывает событие изменения
-  переменной `_openedModal`
-- closeModal: () => void - закрытие модального окна, вызывает событие изменения переменной `_openedModal`
+  переменной `openedModal`
+- closeModal: () => void - закрытие модального окна, вызывает событие изменения переменной `openedModal`
+- getBasketTotal: () => number | null - получение суммы товаров в корзине
 - checkOrderValidation: (data: Record<keyof IOrder, string>) => boolean - валидация полей заказа, вызывает событие
   отображения ошибки валидации
-- геттеры и сеттеры
+- геттеры и сеттеры, там где они необходимы
 
 ### Классы представлений
+
+#### Класс Modal - общий класс для модальных окон
+```
+abstract class Modal {
+  close()
+}
+```
+
+#### Класс BasketView - отображение корзины в модальном окне
+```
+class BasketView extends Modal {
+  private template: HTMLElement
+  private basket: TBasketProduct[]
+  private total: number | null
+  
+  order();
+  removeProduct(id: string);
+}
+```
+#### Класс ShortBasketView - отображение закрытой корзины
+```
+class ShortBasketView {
+  private template: HTMLElement
+  private total: number | null
+  
+  openModal()
+}
+```
+
+#### Класс ProductView - отображение продукта на главной странице
+```
+class ProductView {
+  private template: HTMLElement
+  private product: TProduct
+  
+  openModal()
+}
+```
+
+#### Класс ProductViewModal - отображение продукта в модальном окне
+```
+class ProductModalView extends Modal {
+  private template: HTMLElement
+  private product: IProduct
+}
+```
+
+#### Класс OrderFormView - отображение формы заказа
+```
+class OrderFormView extends Modal {
+  private template: HTMLElement
+  private orderFields: Record<keyof IOrder, [value:string, error:string]> | null
+  
+  isButtonActive()
+}
+```
+
+#### Класс OrderResultView - отображение результата заказа
+```
+class OrderResultView extends Modal {
+  private template: HTMLElement
+  private total: number
+}
+```
