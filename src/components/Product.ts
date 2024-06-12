@@ -15,10 +15,7 @@ export interface IProductView {
     price: string
 }
 
-// Отображение продукта на главной странице
-type TProduct = Omit<IProductView, "description">
-
-export class ProductView extends Component<TProduct> {
+export class ProductView extends Component<IProductView> {
     private _image: HTMLImageElement;
     private _title: HTMLElement;
     private _category: HTMLElement;
@@ -52,5 +49,18 @@ export class ProductView extends Component<TProduct> {
 
     set price(value: string) {
         this.setText(this._price, value)
+    }
+}
+
+export class ProductViewModal extends ProductView {
+    private _description: HTMLElement;
+
+    constructor(container: HTMLElement, actions: IProductActions) {
+        super(container, actions);
+        this._description = ensureElement<HTMLElement>('.card__text', container);
+    }
+
+    set description(value: string) {
+        this.setText(this._description, value)
     }
 }

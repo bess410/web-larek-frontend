@@ -45,4 +45,8 @@ export interface IAppData {
 
 export enum Events {
     PRODUCTS_CHANGED = 'products:changed',
+    PRODUCT_OPEN_IN_MODAL = 'product:openInModal',
+    ADD_PRODUCT_TO_BASKET = 'product:addToBasket',
+    MODAL_OPEN = 'modal:open',
+    MODAL_CLOSE = 'modal:close',
 }
