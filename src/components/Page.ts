@@ -34,4 +34,8 @@ export class Page extends Component<IPage> {
     set locked(value: boolean) {
         this.toggleClass(this.wrapper, 'page__wrapper_locked', value);
     }
+
+    set basketCounter(counter: number) {
+        this.setText(this._basketCounter, counter);
+    }
 }

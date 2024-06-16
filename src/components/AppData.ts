@@ -1,15 +1,22 @@
 import {Model} from "./base/Model";
 import {Events, IAppData, IOrder, IProduct} from "../types";
+import {IEvents} from "./base/Events";
 
 export type ProductsChangeEvent = {
     products: IProduct[]
 }
 
 export class AppData extends Model<IAppData> {
-    private products: IProduct[]
-    private basket: IProduct[]
-    private selectedProduct: string | null
-    private order: IOrder
+    private products: IProduct[];
+    private basket: IProduct[];
+    private order: IOrder;
+
+    constructor(data: Partial<IAppData>, events: IEvents, products: IProduct[], basket: IProduct[], order: IOrder) {
+        super(data, events);
+        this.products = products;
+        this.basket = basket;
+        this.order = order;
+    }
 
     setProducts(products: IProduct[]) {
         this.products = products;
@@ -18,5 +25,15 @@ export class AppData extends Model<IAppData> {
 
     getProducts() {
         return this.products;
+    }
+
+    getBasket() {
+        return this.basket;
+    }
+
+    addProductToBasket(product: IProduct) {
+        if (!this.basket.some(item => item === product)) {
+            this.basket.push(product);
+        }
     }
 }

@@ -16,15 +16,15 @@ export interface IProduct {
     price: number | null
 }
 
-type OrderPayment = "online" | "cash"
+type PaymentType = "online" | "cash"
 
 export interface IOrder {
-    payment: OrderPayment
+    payment: PaymentType
     email: string
     phone: string
     address: string
     total: number
-    items: IProduct[]
+    products: IProduct[]
 }
 
 // Отображение продукта в корзине
@@ -39,7 +39,6 @@ export interface IOrderResult {
 export interface IAppData {
     products: IProduct[]
     basket: IProduct[]
-    selectedProduct: string | null
     order: IOrder
 }
 

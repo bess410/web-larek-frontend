@@ -18,7 +18,7 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const productModal = ensureElement<HTMLTemplateElement>('#card-preview');
 
 // Модель данных приложения
-const appData = new AppData({}, events);
+const appData = new AppData({}, events, [], [], null);
 
 // Глобальные контейнеры
 const page = new Page(document.body, events);
@@ -45,18 +45,19 @@ events.on<ProductsChangeEvent>(Events.PRODUCTS_CHANGED, () => {
 });
 
 // Открыть товар в модальном окне
-events.on(Events.PRODUCT_OPEN_IN_MODAL, (item: IProduct) => {
+events.on(Events.PRODUCT_OPEN_IN_MODAL, (product: IProduct) => {
     const card = new ProductViewModal(cloneTemplate(productModal), {
-        onClick: () => events.emit(Events.ADD_PRODUCT_TO_BASKET, item),
+        onClick: () => events.emit(Events.ADD_PRODUCT_TO_BASKET, product),
     });
 
     modal.render({
         content: card.render({
-            title: item.title,
-            image: CDN_URL + item.image,
-            category: item.category,
-            description: item.description,
-            price: item.price ? `${item.price} синапсов` : 'Бесценно'
+            title: product.title,
+            image: CDN_URL + product.image,
+            category: product.category,
+            description: product.description,
+            price: product.price ? `${product.price} синапсов` : '',
+            status: product.price === null || appData.getBasket().some(item => item === product)
         }),
     });
 });
@@ -69,6 +70,13 @@ events.on(Events.MODAL_OPEN, () => {
 // Разблокируем прокрутку страницы если закрыли модалку
 events.on(Events.MODAL_CLOSE, () => {
     page.locked = false;
+});
+
+// Добавляем продукт в корзину
+events.on(Events.ADD_PRODUCT_TO_BASKET, (product: IProduct) => {
+    appData.addProductToBasket(product);
+    page.basketCounter = appData.getBasket().length
+    modal.close();
 });
 
 // Получаем продукты с сервера
