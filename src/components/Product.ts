@@ -1,4 +1,4 @@
-import {ProductCategory} from "../types";
+import {ListItem, ProductCategory, TBasketProduct} from "../types";
 import {Component} from "./base/Component";
 import {ensureElement} from "../utils/utils";
 
@@ -85,5 +85,30 @@ export class ProductViewModal extends ProductView {
 
     set description(value: string) {
         this.setText(this._description, value)
+    }
+}
+
+export class ProductInBasketView extends Component<TBasketProduct | ListItem> {
+    private _index: HTMLElement;
+    private _price: HTMLElement;
+    private _title: HTMLElement;
+
+    constructor(container: HTMLElement, actions?: IProductActions) {
+        super(container);
+        this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
+        this._price = ensureElement<HTMLElement>('.card__price', container);
+        this._title = ensureElement<HTMLElement>('.card__title', container);
+    }
+
+    set index(value: number) {
+        this.setText(this._index, value);
+    }
+
+    set price(value: number) {
+        this.setText(this._price, value);
+    }
+
+    set title(value: string) {
+        this.setText(this._title, value);
     }
 }

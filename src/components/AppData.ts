@@ -36,4 +36,9 @@ export class AppData extends Model<IAppData> {
             this.basket.push(product);
         }
     }
+
+    getTotalPrice() {
+        return this.basket.map(product => product.price)
+            .reduce((prev, current) => prev + current, 0);
+    }
 }

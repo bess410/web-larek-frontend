@@ -28,7 +28,11 @@ export interface IOrder {
 }
 
 // Отображение продукта в корзине
-type TBasketProduct = Pick<IProduct, "id" | "title" | "price">
+export type TBasketProduct = Pick<IProduct, "id" | "title" | "price">
+
+export type ListItem = {
+    index: number
+}
 
 export interface IOrderResult {
     id: string
@@ -48,4 +52,7 @@ export enum Events {
     ADD_PRODUCT_TO_BASKET = 'product:addToBasket',
     MODAL_OPEN = 'modal:open',
     MODAL_CLOSE = 'modal:close',
+    BASKET_OPEN = 'basket:open',
+    ORDER_START = 'order:start',
+    REMOVE_PRODUCT_FROM_BASKET = 'product:removeFromBasket',
 }
