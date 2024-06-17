@@ -107,6 +107,12 @@ events.on(Events.BASKET_OPEN, () => {
     });
 });
 
+//Удаляем продукт из корзины
+events.on(Events.REMOVE_PRODUCT_FROM_BASKET, (product: IProduct) => {
+    appData.removeProductFromBasket(product);
+    page.basketCounter = appData.getBasket().length
+});
+
 // Получаем продукты с сервера
 api.getProducts()
     .then(data => appData.setProducts(data.items))

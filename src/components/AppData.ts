@@ -41,4 +41,9 @@ export class AppData extends Model<IAppData> {
         return this.basket.map(product => product.price)
             .reduce((prev, current) => prev + current, 0);
     }
+
+    removeProductFromBasket(product: IProduct) {
+        this.basket = this.basket.filter(item => item !== product);
+        this.emitChanges(Events.BASKET_OPEN);
+    }
 }
