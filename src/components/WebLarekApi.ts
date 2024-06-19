@@ -1,9 +1,10 @@
 import {List} from "./base/List";
-import {IProduct} from "../types";
+import {IOrder, IOrderResult, IProduct} from "../types";
 import {Api} from "./base/Api";
 
 export interface IWebLarekApi {
     getProducts(): Promise<List<IProduct>>;
+    createOrder(order: IOrder): Promise<IOrderResult>;
 }
 
 export class WebLarekApi extends Api implements IWebLarekApi {
@@ -15,5 +16,9 @@ export class WebLarekApi extends Api implements IWebLarekApi {
     }
     getProducts(): Promise<List<IProduct>> {
         return this.get('/product') as Promise<List<IProduct>>;
+    }
+
+    createOrder(order: IOrder): Promise<IOrderResult> {
+        return this.post('/order', order) as Promise<IOrderResult>;
     }
 }

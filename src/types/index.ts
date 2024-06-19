@@ -16,16 +16,21 @@ export interface IProduct {
     price: number | null
 }
 
-type PaymentType = "online" | "cash"
-
 export interface IOrder {
-    payment: PaymentType
+    payment: string
     email: string
     phone: string
     address: string
     total: number
-    products: IProduct[]
+    items: string[]
 }
+
+export type FormErrors = {
+    email?: string;
+    phone?: string;
+    address?: string;
+    payment?: string;
+};
 
 // Отображение продукта в корзине
 export type TBasketProduct = Pick<IProduct, "id" | "title" | "price">
@@ -37,6 +42,7 @@ export type ListItem = {
 export interface IOrderResult {
     id: string
     total: number
+    error?: string
 }
 
 // Модель
@@ -55,4 +61,8 @@ export enum Events {
     BASKET_OPEN = 'basket:open',
     ORDER_START = 'order:start',
     REMOVE_PRODUCT_FROM_BASKET = 'product:removeFromBasket',
+    SET_PAYMENT_TYPE = 'order:setPaymentType',
+    ORDER_READY = 'order:ready',
+    FORM_ERRORS_CHANGED = 'form:errorsChanged',
+    ORDER_CLEAR = 'order:clear',
 }
