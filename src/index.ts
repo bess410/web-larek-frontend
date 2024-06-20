@@ -4,14 +4,14 @@ import {API_URL, CDN_URL} from "./utils/constants";
 import {WebLarekApi} from './components/WebLarekApi';
 import {cloneTemplate, createElement, ensureElement} from "./utils/utils";
 import {AppData, ProductsChangeEvent} from "./components/AppData";
-import {Page} from "./components/Page";
+import {PageView} from "./components/PageView";
 import {ProductInBasketView, ProductView, ProductViewModal} from "./components/Product";
 import {Events, IOrder, IProduct} from "./types";
-import {Modal} from "./components/base/Modal";
+import {Modal} from "./components/common/Modal";
 import {BasketView} from "./components/BasketView";
 import {OrderForm} from "./components/OrderForm";
 import {ContactsForm} from "./components/ContactsForm";
-import {Success} from "./components/Success";
+import {SuccessView} from "./components/SuccessView";
 
 const events = new EventEmitter();
 const api = new WebLarekApi(CDN_URL, API_URL);
@@ -37,18 +37,24 @@ const appData = new AppData({}, events, [], [], {
 });
 
 // Контейнеры
-const page = new Page(document.body, events);
-const basket = new BasketView(cloneTemplate(basketTemplate), events);
+const pageView = new PageView(document.body, events);
+const basketView = new BasketView(cloneTemplate(basketTemplate), events);
 const orderForm = new OrderForm(cloneTemplate(orderTemplate), events);
 const contactsForm = new ContactsForm(cloneTemplate(contactsTemplate), events);
+const successView = new SuccessView(cloneTemplate(successOrderTemplate), {
+    onClick: () => {
+        modal.close();
+        events.emit(Events.ORDER_CLEAR);
+    },
+});
 
 // Дальше идет бизнес-логика
 // Поймали событие, сделали что нужно
 
 //Изменились продукты на главной странице
 events.on<ProductsChangeEvent>(Events.PRODUCTS_CHANGED, () => {
-    page.basketCounter = appData.getBasket().length;
-    page.products = appData.getProducts().map(item => {
+    pageView.basketCounter = appData.getBasket().length;
+    pageView.products = appData.getProducts().map(item => {
         const product = new ProductView(cloneTemplate(cardCatalogTemplate), {
             onClick: () => {
                 events.emit(Events.PRODUCT_OPEN_IN_MODAL, item);
@@ -84,18 +90,18 @@ events.on(Events.PRODUCT_OPEN_IN_MODAL, (product: IProduct) => {
 
 // Блокируем прокрутку страницы если открыта модалка
 events.on(Events.MODAL_OPEN, () => {
-    page.locked = true;
+    pageView.locked = true;
 });
 
 // Разблокируем прокрутку страницы если закрыли модалку
 events.on(Events.MODAL_CLOSE, () => {
-    page.locked = false;
+    pageView.locked = false;
 });
 
 // Добавляем продукт в корзину
 events.on(Events.ADD_PRODUCT_TO_BASKET, (product: IProduct) => {
     appData.addProductToBasket(product);
-    page.basketCounter = appData.getBasket().length
+    pageView.basketCounter = appData.getBasket().length
     modal.close();
 });
 
@@ -114,7 +120,7 @@ events.on(Events.BASKET_OPEN, () => {
     });
     modal.render({
         content: createElement<HTMLElement>('div', {}, [
-            basket.render({
+            basketView.render({
                 products,
                 total: appData.getTotalPrice()
             })
@@ -125,7 +131,7 @@ events.on(Events.BASKET_OPEN, () => {
 //Удаляем продукт из корзины
 events.on(Events.REMOVE_PRODUCT_FROM_BASKET, (product: IProduct) => {
     appData.removeProductFromBasket(product);
-    page.basketCounter = appData.getBasket().length
+    pageView.basketCounter = appData.getBasket().length
 });
 
 //Начинаем оформление заказа
@@ -196,26 +202,14 @@ events.on(/(^order|^contacts):submit/, () => {
             total: appData.getTotalPrice(),
         })
         .then((result) => {
-            const success = new Success(cloneTemplate(successOrderTemplate), {
-                onClick: () => {
-                    modal.close();
-                    events.emit(Events.ORDER_CLEAR);
-                },
-            });
-
             modal.render({
-                content: success.render({
+                content: successView.render({
                     title: !result.error ? 'Заказ оформлен' : 'Ошибка оформления заказа',
                     description: !result.error ? `Списано ${result.total} синапсов` : result.error,
                 }),
             });
         })
-        .catch((err) => {
-            console.error(err);
-        })
-        .finally(() => {
-            events.emit(Events.ORDER_CLEAR);
-        });
+        .catch(console.error);
 });
 
 // Очистить заказ и корзину

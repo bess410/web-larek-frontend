@@ -9,7 +9,7 @@ interface IPage {
     locked: boolean;
 }
 
-export class Page extends Component<IPage> {
+export class PageView extends Component<IPage> {
     private _basketCounter: HTMLElement;
     private _products: HTMLElement;
     private _basket: HTMLElement;

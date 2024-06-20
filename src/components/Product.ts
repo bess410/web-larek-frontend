@@ -54,7 +54,7 @@ export class ProductView extends Component<IProductView> {
         if (this._category) {
             this.setText(this._category, value);
             const categoryStyle = `card__category_${ProductCategory[value]}`;
-            this._category.classList.add(categoryStyle);
+            this.toggleClass(this._category, categoryStyle, true);
         }
     }
 
@@ -109,7 +109,7 @@ export class ProductInBasketView extends Component<TBasketProduct | ListItem> {
     }
 
     set price(value: number) {
-        this.setText(this._price, value);
+        this.setText(this._price, `${value} синапсов`);
     }
 
     set title(value: string) {

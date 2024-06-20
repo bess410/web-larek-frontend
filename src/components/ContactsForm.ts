@@ -1,4 +1,4 @@
-import {Form} from "./base/Form";
+import {Form} from "./common/Form";
 import {IOrder} from "../types";
 import {IEvents} from "./base/Events";
 

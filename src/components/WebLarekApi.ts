@@ -1,4 +1,4 @@
-import {List} from "./base/List";
+import {List} from "../types/List";
 import {IOrder, IOrderResult, IProduct} from "../types";
 import {Api} from "./base/Api";
 
